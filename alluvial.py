@@ -4,8 +4,7 @@ from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib.cm
-import itertools
-import bidi.algorithm
+import itertools.product
 
 
 def plot(input_data, *args, **kwargs):
@@ -198,7 +197,7 @@ class AlluvialTool:
             ans = '{} - {}'.format(item, self.item_coord_dic[item].get_width())
         else:
             ans = '{}'.format(item)
-        return bidi.algorithm.get_display(ans)
+        return ans
 
     @staticmethod
     def get_text_kwargs(kwargs):
