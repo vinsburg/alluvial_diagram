@@ -1,7 +1,20 @@
 # alluvial_diagram
 A python script for generating "alluvial" styled bipartite diagrams, using matplotlib and numpy
 
-## Example1:
+## Getting Started
+
+Copy alluvial.py to your working directory, and follow the syntax in the examples below.
+Future documentation will be added here.
+
+### Prerequisites
+
+matplotlib and numpy
+
+### Installing
+
+Copy alluvial.py to your working directory.
+
+#### Example1:
 <pre><code>
 import alluvial
 import matplotlib.pyplot as plt
@@ -17,7 +30,7 @@ plt.show()
 </code></pre>
 ![Alt text](/image_examples/Example1.png)
 
-## Example2:
+#### Example2:
 <pre><code>
 import alluvial
 import matplotlib.pyplot as plt
@@ -35,3 +48,14 @@ fig = ax.get_figure()
 plt.show()
 </code></pre>
 ![Alt text](/image_examples/Example2.png)
+
+
+## License
+
+This project is licensed under the Apache 2.0 License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Inspired by [rawgraphs](http://rawgraphs.io/gallery_project/visualizations-for-issue-mapping-book/)
+
+
