@@ -63,7 +63,7 @@ plt.show()
   * show_width = False - if True, displays vein widths beside item labels
   * x_range=(0, 1) - changes the horizontal plot coordinates
   * res=20 - determines the number of points constituting the alluvial vein spline
-  * h_gap_frac=0.03 - changes the horizontal gap between the letters, blocks and veins
+  * h_gap_frac=0.03 - changes the horizontal gap between the labels, vein base rectangles, and veins
   * v_gap_frac=0.03 - changes the vertical gap between veins
   * colors - a list of numbers between 0 and 1 defining colors for the color map.
   * a_sort, b_sort - lists defining plot order of items (both are None by default)
