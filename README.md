@@ -15,6 +15,7 @@ fig = ax.get_figure()
 fig.set_size_inches(5,5)
 plt.show()
 </code></pre>
+![Alt text](/image_examples/Example1.png)
 
 ## Example2:
 <pre><code>
@@ -33,3 +34,4 @@ ax = lib.figs.alluvial.plot(input_data,  alpha=0.6, color_side=1, rand_seed=1, s
 fig = ax.get_figure()
 plt.show()
 </code></pre>
+![Alt text](/image_examples/Example2.png)
