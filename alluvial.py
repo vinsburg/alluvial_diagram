@@ -153,9 +153,9 @@ class AlluvialTool:
                     alluvial_fan += [
                         [self.generate_alluvial_vein(a_item, b_item), l_a_rect, l_b_rect, a_item, b_item, ]]
         return np.array(alluvial_fan)
-
-    def plot(self, cmap=matplotlib.cm.get_cmap('jet'), figsize=(10, 15), alpha=0.4, **kwargs):
-        colors = self.get_random_colors(**kwargs)
+    
+    def plot(self, cmap=matplotlib.cm.get_cmap('jet'), figsize=(10, 15), alpha=0.4, colors=None, **kwargs):
+        colors = self.get_random_colors(**kwargs) if not colors else colors
         fig, ax = plt.subplots(figsize=figsize)
         for num in (0, 1, 2):
             patches = [Polygon(item) for item in self.alluvial_fan[:, num]]
