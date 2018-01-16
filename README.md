@@ -43,7 +43,7 @@ mm = 5
 input_data = {chr(rand(mm*4)+65): {chr(rand(mm)+97): 4*rand(mm) for _ in range(mm)} for _ in range(mm*4)}
 
 cmap = matplotlib.cm.get_cmap('gist_rainbow')
-ax = alluvial.plot(input_data,  alpha=0.6, color_side=1, rand_seed=1, show_width=True, figsize=(10,15), cmap=cmap)
+ax = alluvial.plot(input_data,  alpha=0.6, color_side=1, rand_seed=1, show_width=True, figsize=(5,6), cmap=cmap)
 fig = ax.get_figure()
 plt.show()
 </code></pre>
