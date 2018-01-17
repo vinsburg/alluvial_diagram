@@ -1,10 +1,10 @@
 import numpy as np
 from collections import Counter, defaultdict
-from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib.cm
-import itertools.product
+import itertools
+import bidi.algorithm
 
 
 def plot(input_data, *args, **kwargs):
@@ -17,17 +17,14 @@ def plot(input_data, *args, **kwargs):
 class AlluvialTool:
     def __init__(
             self, input_data=(), x_range=(0, 1), res=20, h_gap_frac=0.03, v_gap_frac=0.03, **kwargs):
-        _ = kwargs
         self.input = input_data
         self.x_range = x_range
         self.res = res  # defines the resolution of the splines for all veins
+        self.combs = sorted(itertools.product((0, 1), (1, 0)), key=lambda xy: all(xy))
         self.trace_xy = self.make_vein_blueprint_xy_arrays()
         self.data_dic = self.read_input()
         self.item_widths_dic = self.get_item_widths_dic()
         self.a_members, self.b_members = self.get_item_groups(**kwargs)
-        # self.a_members = sorted({a_item for a_item in self.data_dic}, reverse=True)
-        # self.b_members = sorted(
-        #     {b_item for b_item_counter in self.data_dic.values() for b_item in b_item_counter}, reverse=True)
         self.h_gap = x_range[1] * h_gap_frac
         self.v_gap_frac = v_gap_frac
         self.v_gap = sum(
@@ -51,10 +48,9 @@ class AlluvialTool:
         y0, yn = y_range
         scale = yn - y0
         ty = y * scale + y0
-        x_new = np.concatenate([x, x[::-1], [x[0]]])
-        y_new = np.concatenate([ty, ty[::-1] + width, [ty[0]]])
+        x_new = np.concatenate([x, x[::-1], ])
+        y_new = np.concatenate([ty, ty[::-1] + width, ])
         return np.array([x_new, y_new]).transpose()
-        # return x_new, y_new
 
     def read_input_from_table(self):
         data_table = np.array(self.input)
@@ -139,8 +135,7 @@ class AlluvialTool:
         rect = [[
                     x + sign * 0.5 * (0.5 + xa) * self.h_gap,
                     y + ya * width,
-                ] for xa, ya in itertools.product((0, 1), repeat=2)]
-        rect = [rect[0]] + [rect[1]] + [rect[3]] + [rect[2]] + [rect[0]]
+                ] for xa, ya in self.combs]
         return np.array(rect)
 
     def generate_alluvial_fan(self, ):
@@ -153,34 +148,40 @@ class AlluvialTool:
                     alluvial_fan += [
                         [self.generate_alluvial_vein(a_item, b_item), l_a_rect, l_b_rect, a_item, b_item, ]]
         return np.array(alluvial_fan)
-    
-    def plot(self, cmap=matplotlib.cm.get_cmap('jet'), figsize=(10, 15), alpha=0.4, colors=None, **kwargs):
-        colors = self.get_random_colors(**kwargs) if not colors else colors
+
+    def plot(self, figsize=(10, 15), alpha=0.4, **kwargs):
+        colors = self.get_color_array(**kwargs)
         fig, ax = plt.subplots(figsize=figsize)
         for num in (0, 1, 2):
-            patches = [Polygon(item) for item in self.alluvial_fan[:, num]]
-            pc = PatchCollection(patches, cmap=cmap, alpha=alpha)
-            pc.set_array(np.array(colors))
-            ax.add_collection(pc)
+            patches = [
+                Polygon(item, facecolor=colors[ind], alpha=alpha,
+                        ) for ind, item in enumerate(self.alluvial_fan[:, num])
+                ]
+            for patch in patches:
+                ax.add_patch(patch)
         self.auto_label_veins(**kwargs)
         ax.autoscale()
         return ax
 
-    def get_random_colors(self, color_side=0, rand_seed=0, **kwargs):
+    def get_color_array(self, colors=None, color_side=0, rand_seed=None,
+                        cmap=None, **kwargs):
         _ = kwargs
         color_items = self.b_members if color_side else self.a_members
-        np.random.seed(rand_seed)
-        color_array = np.random.rand(len(color_items))
+        lci = len(color_items)
+        if rand_seed is not None:
+            np.random.seed(rand_seed)
+        cmap = cmap if cmap is not None else matplotlib.cm.get_cmap('hsv', lci*10**2)
+        color_array = colors if colors is not None else [
+            cmap(item) for ind, item in enumerate(np.random.rand(lci))]
         ind_dic = {item: ind for ind, item in enumerate(color_items)}
-        colors = []
+        polygon_colors = []
         for _, _, _, a_item, b_item, in self.alluvial_fan:
             item = b_item if color_side else a_item
-            colors += [color_array[ind_dic[item]]]
-        return np.array(colors)
+            polygon_colors += [color_array[ind_dic[item]]]
+        return np.array(polygon_colors)
 
     def auto_label_veins(self, **kwargs):
         # shift = max([len(item) for item in self.item_coord_dic.keys()]) / 50
-        text_kwargs = self.get_text_kwargs(kwargs)
         for item, vein in self.item_coord_dic.items():
             y_width = vein.get_width()
             sign = vein.get_side_sign()
@@ -189,73 +190,12 @@ class AlluvialTool:
                 vein.get_x() + 1.5 * sign * self.h_gap,
                 vein.get_y() + y_width / 2,
                 self.item_text(item, **kwargs),
-                ha=ha, va='center', **text_kwargs)
+                ha=ha, va='center',)
 
     def item_text(self, item, show_width=False, **kwargs):
         _ = kwargs
-        if show_width:
-            ans = '{} - {}'.format(item, self.item_coord_dic[item].get_width())
-        else:
-            ans = '{}'.format(item)
-        return ans
-
-    @staticmethod
-    def get_text_kwargs(kwargs):
-        kw_list = ['agg_filter',
-                   'alpha',
-                   'animated',
-                   'backgroundcolor',
-                   'bbox',
-                   'clip_box',
-                   'clip_on',
-                   'clip_path',
-                   'color',
-                   'contains',
-                   'family',
-                   'fontfamily',
-                   'fontname',
-                   'name',
-                   'figure',
-                   'fontproperties',
-                   'font_properties',
-                   'gid',
-                   'horizontalalignment',
-                   'ha',
-                   'label',
-                   'linespacing',
-                   'multialignment',
-                   'ma',
-                   'path_effects',
-                   'picker',
-                   'position',
-                   'rasterized',
-                   'rotation',
-                   'rotation_mode',
-                   'size',
-                   'fontsize',
-                   'sketch_params',
-                   'snap',
-                   'stretch',
-                   'fontstretch',
-                   'style',
-                   'fontstyle',
-                   'text',
-                   'transform',
-                   'url',
-                   'usetex',
-                   'variant',
-                   'fontvariant',
-                   'verticalalignment',
-                   'va',
-                   'visible',
-                   'weight',
-                   'fontweight',
-                   'wrap',
-                   'x',
-                   'y',
-                   'zorder',
-                   ]
-        return {key: value for key, value in kwargs.items() if key in kw_list}
+        ans = '{}'.format(item) if not show_width else '{} - {}'.format(
+            item, self.item_coord_dic[item].get_width())
 
 
 class ItemCoordRecord:
