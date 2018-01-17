@@ -41,14 +41,12 @@ import numpy as np
 def rand(mm):
     return int((mm**2)*np.random.rand()//mm)
 mm = 5
-input_data = {
-  chr(rand(mm*4)+65): {chr(rand(mm)+97): 4*rand(mm) for _ in range(mm)} for _ in range(mm*4)}
+input_data = {chr(rand(mm*4)+65): {chr(rand(mm)+97): 4*rand(mm) for _ in range(mm)} for _ in range(mm*4)}
 
 # Plotting:
 cmap = matplotlib.cm.get_cmap('gist_rainbow')
 ax = alluvial.plot(
   input_data,  alpha=0.6, color_side=1, rand_seed=1, show_width=True, figsize=(5,6), cmap=cmap)
-fig = ax.get_figure()
 plt.show()
 </code></pre>
 ![](/image_examples/Example2.png)
@@ -57,16 +55,17 @@ plt.show()
 * Additional input format - a list of tuples of structure:
   * input_data = [('a_item0', 'b_item0'), ('a_item0', 'b_item1') , ('a_item1', 'b_item0')]
 * Parameters and default values:
-  * alpha = 0.4 - defines facecolor alpha for all veins
-  * color_side = 0 - vein colors determined by left side items (0) or right side items (1)
-  * rand_seed = 0 - a seed for the random color generator
-  * show_width = False - if True, displays vein widths beside item labels
+  * alpha=0.4 - defines facecolor alpha for all veins
+  * color_side=0 - vein colors determined by left side items (0) or right side items (1)
+  * show_width=False - if True, displays vein widths beside item labels
   * x_range=(0, 1) - changes the horizontal plot coordinates
   * res=20 - determines the number of points constituting the alluvial vein spline
   * h_gap_frac=0.03 - changes the horizontal gap between the labels, vein base rectangles, and veins
   * v_gap_frac=0.03 - changes the vertical gap between veins
-  * colors - a list of numbers between 0 and 1 defining colors for the color map.
-  * a_sort, b_sort - lists defining plot order of items (both are None by default)
+  * colors=None - an optional list of matplotlib spec colors, len(colors) must be equal to the number of items on color_side
+  * cmap=None - a matplotlib.cm color map instance, for choosing random colors. if None, 'hsv' is used
+  * rand_seed=None - a seed for the random color generator, if Non,e colors are chosen at random
+  * a_sort, b_sort - lists defining plot order of items (both are None by default). if None, items are sorted by width
 
 
 ## License
