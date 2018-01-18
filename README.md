@@ -64,7 +64,7 @@ plt.show()
   * v_gap_frac=0.03 - changes the vertical gap between veins
   * colors=None - an optional list of matplotlib spec colors, len(colors) must be equal to the number of items on color_side
   * cmap=None - a matplotlib.cm color map instance, for choosing random colors. if None, 'hsv' is used
-  * rand_seed=None - a seed for the random color generator, if Non,e colors are chosen at random
+  * rand_seed=None - a seed for the random color generator, if None colors are chosen at random
   * a_sort, b_sort - lists defining plot order of items (both are None by default). if None, items are sorted by width
 
 
