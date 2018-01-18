@@ -179,28 +179,38 @@ class AlluvialTool:
             polygon_colors += [color_array[ind_dic[item]]]
         return np.array(polygon_colors)
     
-    def auto_label_veins(self, **kwargs):
+    def auto_label_veins(self, fontname='Arial', **kwargs):
         # shift = max([len(item) for item in self.item_coord_dic.keys()]) / 50
         item_text_len = max([len(it) for it in self.item_coord_dic])
         width_text_len = max([len(str(w)) for w in self.item_widths_dic.values()])
         for item, vein in self.item_coord_dic.items():
             y_width = vein.get_width()
             sign = vein.get_side_sign()
+            side = int(sign + 1) // 2
             ha = 'right' if sign == -1 else 'left'
             plt.text(
                 vein.get_x() + 1.5 * sign * self.h_gap,
                 vein.get_y() + y_width / 2,
-                self.item_text(item, item_text_len, width_text_len, **kwargs),
-                ha=ha, va='center', name='Arial')
+                self.item_text(item, item_text_len, width_text_len, side, **kwargs),
+                ha=ha, va='center', fontname=fontname)
 
-    def item_text(self, item, item_text_len, width_text_len, show_width=False, **kwargs):
+    def item_text(
+            self, item, item_text_len, width_text_len, side,
+            disp_width=False, wdisp_sep=7*' ', width_in=True, **kwargs):
         _ = kwargs
-        if not show_width:
-            ans = '{}'.format(item)
+        f_item = item
+        # f_item = bidi.algorithm.get_display(item)  # for RTL languages
+        tal = '<' if f_item == item else '>'
+        if not disp_width:
+            ans = ('{:%s}' % tal).format(item)
         else:
-            side_char = '<'
-            pat = '{:%s%d}%s{:%s%d}' % (side_char, width_text_len, 7*' ', side_char, item_text_len, )
-            ans = pat.format(self.item_coord_dic[item].get_width(), item, )
+            width = self.item_coord_dic[item].get_width()
+            if side and width_in or (not side and not width_in):
+                lc, rc, wl, wr, tl, tr = '>', tal, width_text_len, item_text_len, width, f_item,
+            else:
+                lc, rc, wl, wr, tl, tr = tal, '>', item_text_len, width_text_len, f_item, width,
+            pat = '{:%s%d}%s{:%s%d}' % (lc, wl, wdisp_sep, rc, wr,)
+            ans = pat.format(tl, tr, )
         return ans
 
 
