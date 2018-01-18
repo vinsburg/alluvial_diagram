@@ -179,9 +179,11 @@ class AlluvialTool:
             item = b_item if color_side else a_item
             polygon_colors += [color_array[ind_dic[item]]]
         return np.array(polygon_colors)
-
+    
     def auto_label_veins(self, **kwargs):
         # shift = max([len(item) for item in self.item_coord_dic.keys()]) / 50
+        item_text_len = max([len(it) for it in self.item_coord_dic])
+        width_text_len = max([len(str(w)) for w in self.item_widths_dic.values()])
         for item, vein in self.item_coord_dic.items():
             y_width = vein.get_width()
             sign = vein.get_side_sign()
@@ -189,13 +191,18 @@ class AlluvialTool:
             plt.text(
                 vein.get_x() + 1.5 * sign * self.h_gap,
                 vein.get_y() + y_width / 2,
-                self.item_text(item, **kwargs),
-                ha=ha, va='center',)
+                self.item_text(item, item_text_len, width_text_len, **kwargs),
+                ha=ha, va='center', name='Arial')
 
-    def item_text(self, item, show_width=False, **kwargs):
+    def item_text(self, item, item_text_len, width_text_len, show_width=False, **kwargs):
         _ = kwargs
-        ans = '{}'.format(item) if not show_width else '{} - {}'.format(
-            item, self.item_coord_dic[item].get_width())
+        if not show_width:
+            ans = '{}'.format(item)
+        else:
+            side_char = '<'
+            pat = '{:%s%d}%s{:%s%d}' % (side_char, width_text_len, 7*' ', side_char, item_text_len, )
+            ans = pat.format(self.item_coord_dic[item].get_width(), item, )
+        return ans
 
 
 class ItemCoordRecord:
