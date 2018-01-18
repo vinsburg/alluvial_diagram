@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib.cm
 import itertools
-import bidi.algorithm
 
 
 def plot(input_data, *args, **kwargs):
