@@ -41,7 +41,7 @@ import numpy as np
 # Generating the input_data:
 seed=7
 np.random.seed(seed)
-def rand_letter(num): return chr(ord('A')+int((num**2)*np.random.rand()//num))
+def rand_letter(num): return chr(ord('A')+int(num*np.random.rand()))
 
 input_data = [[rand_letter(15), rand_letter(5)*2] for _ in range(50)]
 
