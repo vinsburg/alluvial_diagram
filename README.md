@@ -41,10 +41,9 @@ import numpy as np
 # Generating the input_data:
 seed=7
 np.random.seed(seed)
-def rand(mm):
-    return int((mm**2)*np.random.rand()//mm)
-mm = 5
-input_data = {chr(rand(mm*4)+65): {chr(rand(mm)+97): 4*rand(mm) for _ in range(mm)} for _ in range(mm*4)}
+def rand_letter(num): return chr(ord('A')+int((num**2)*np.random.rand()//num))
+
+input_data = [[rand_letter(15), rand_letter(5)*2] for _ in range(50)]
 
 # Plotting:
 cmap = matplotlib.cm.get_cmap('jet')
