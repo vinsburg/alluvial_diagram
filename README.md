@@ -48,8 +48,8 @@ input_data = [[rand_letter(15), rand_letter(5)*2] for _ in range(50)]
 # Plotting:
 cmap = matplotlib.cm.get_cmap('jet')
 ax = alluvial.plot(
-    input_data,  alpha=0.4, color_side=1, rand_seed=seed, disp_width=True,
-    figsize=(7,6), cmap=cmap, fontname='Monospace')
+    input_data,  alpha=0.4, color_side=1, rand_seed=seed, figsize=(7,5),
+    disp_width=True, wdisp_sep=' '*4, cmap=cmap, fontname='Monospace')
 plt.show()
 </code></pre>
 ![](/image_examples/Example2.png)
