@@ -148,7 +148,7 @@ class AlluvialTool:
                         [self.generate_alluvial_vein(a_item, b_item), l_a_rect, l_b_rect, a_item, b_item, ]]
         return np.array(alluvial_fan)
 
-    def plot(self, figsize=(10, 15), alpha=0.4, **kwargs):
+    def plot(self, figsize=(10, 15), alpha=0.5, **kwargs):
         colors = self.get_color_array(**kwargs)
         fig, ax = plt.subplots(figsize=figsize)
         for num in (0, 1, 2):
@@ -162,7 +162,7 @@ class AlluvialTool:
         ax.autoscale()
         return ax
 
-    def get_color_array(self, colors=None, color_side=0, rand_seed=None,
+    def get_color_array(self, colors=None, color_side=0, rand_seed=1,
                         cmap=None, **kwargs):
         _ = kwargs
         color_items = self.b_members if color_side else self.a_members
