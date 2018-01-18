@@ -50,7 +50,7 @@ input_data = {chr(rand(mm*4)+65): {chr(rand(mm)+97): 4*rand(mm) for _ in range(m
 cmap = matplotlib.cm.get_cmap('jet')
 ax = alluvial.plot(
     input_data,  alpha=0.4, color_side=1, rand_seed=seed, disp_width=True,
-    figsize=(5,6), cmap=cmap, fontname='Monospace')
+    figsize=(7,6), cmap=cmap, fontname='Monospace')
 plt.show()
 </code></pre>
 ![](/image_examples/Example2.png)
