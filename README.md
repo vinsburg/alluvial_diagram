@@ -71,6 +71,9 @@ plt.show()
   * disp_width=False - if True, displays vein widths beside item labels
   * wdisp_sep=7*' ' - seperates width and item text if width is displayed
   * width_in=True - displays width between the item text and the graph, reversed order if False
+  * labels=None - a tuple of form ('a_label', 'b_label'), if None side labels are not plotted
+  * figsize=(10, 15), The figure size.
+  * fontname='Arial' The font of all figure text
 
 
 ## License
