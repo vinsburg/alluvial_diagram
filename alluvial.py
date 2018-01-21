@@ -205,14 +205,14 @@ class AlluvialTool:
                 ha=ha, va='center', fontname=fontname)
 
     def label_sides(
-            self, labels=None, disp_width=False, wdisp_sep=7*' ', fontname='Arial', **kwargs):
+            self, labels=None, label_shift=0, disp_width=False, wdisp_sep=7*' ', fontname='Arial', **kwargs):
         if labels is not None:
             _ = kwargs
             y = max(self.group_widths)/2
             itl, wtl = self.item_text_len, self.width_text_len
             for side, sign in enumerate((-1, 1)):
                 plt.text(
-                    self.x_range[side]+sign*(itl+int(disp_width)*(len(wdisp_sep)+wtl))*self.h_gap_frac/1.7,
+                    self.x_range[side]+sign*(label_shift+itl+int(disp_width)*(len(wdisp_sep)+wtl))*self.h_gap_frac,
                     y,
                     labels[side]
                     # bidi.algorithm.get_display(labels[side]),  # RTL languages
