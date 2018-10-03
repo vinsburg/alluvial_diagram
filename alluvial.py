@@ -214,7 +214,7 @@ class AlluvialTool:
                 plt.text(
                     self.x_range[side]+sign*(label_shift+itl+int(disp_width)*(len(wdisp_sep)+wtl))*self.h_gap_frac,
                     y,
-                    labels[side]
+                    labels[side],
                     # bidi.algorithm.get_display(labels[side]),  # RTL languages
                     ha='center', va='center', fontname=fontname, fontsize=13, rotation=90-180*side
                 )
