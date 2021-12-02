@@ -73,10 +73,10 @@ class AlluvialTool:
         return self.input
 
     def read_input(self):
-        return {
-            dict: self.read_input_from_dict(),
-            list: self.read_input_from_list()
-         }[type(self.input)]
+        if type(self.input) == dict:
+            return self.read_input_from_dict()
+        else:
+            return self.read_input_from_list()
 
     def get_item_widths_dic(self):
         iwd = Counter()
