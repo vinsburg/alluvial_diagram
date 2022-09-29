@@ -16,15 +16,13 @@ Copy alluvial.py to your working directory.
 
 #### Example 1:
 <pre><code>
-import alluvial
-import matplotlib.pyplot as plt
-import numpy as np
+import alluvipy as ap
 
 input_data = {'a': {'aa': 0.3, 'cc': 0.7,},
               'b': {'aa': 2, 'bb': 0.5,},
               'c': {'aa': 0.5, 'bb': 0.5, 'cc': 1.5,}}
 
-ax = alluvial.plot(input_data)
+ax = ap.plot(input_data)
 fig = ax.get_figure()
 fig.set_size_inches(5,5)
 plt.show()
@@ -33,7 +31,7 @@ plt.show()
 
 #### Example 2:
 <pre><code>
-import alluvial
+import alluvial as ap
 import matplotlib.pyplot as plt
 import matplotlib.cm
 import numpy as np
@@ -47,7 +45,7 @@ input_data = [[rand_letter(15), rand_letter(5)*2] for _ in range(50)]
 
 # Plotting:
 cmap = matplotlib.cm.get_cmap('jet')
-ax = alluvial.plot(
+ax = ap.plot(
     input_data,  alpha=0.4, color_side=1, rand_seed=seed, figsize=(7,5),
     disp_width=True, wdisp_sep=' '*2, cmap=cmap, fontname='Monospace',
     labels=('Capitals', 'Double Capitals'), label_shift=2)
