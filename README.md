@@ -17,6 +17,8 @@ Copy alluvial.py to your working directory.
 #### Example 1:
 <pre><code>
 import alluvipy as ap
+import matplotlib.pyplot as plt
+import numpy as np
 
 input_data = {'a': {'aa': 0.3, 'cc': 0.7,},
               'b': {'aa': 2, 'bb': 0.5,},
