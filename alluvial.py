@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib.cm
 import itertools
+
+
 # import bidi.algorithm  # for RTL languages
 
 
@@ -16,7 +18,13 @@ def plot(input_data, *args, **kwargs):
 
 class AlluvialTool:
     def __init__(
-            self, input_data=(), x_range=(0, 1), res=20, h_gap_frac=0.03, v_gap_frac=0.03, **kwargs):
+            self,
+            input_data=(),
+            x_range=(0, 1),
+            res=20,
+            h_gap_frac=0.03,
+            v_gap_frac=0.03,
+            **kwargs):
         self.input = input_data
         self.x_range = x_range
         self.res = res  # defines the resolution of the splines for all veins
@@ -29,7 +37,8 @@ class AlluvialTool:
         self.h_gap = x_range[1] * h_gap_frac
         self.v_gap_frac = v_gap_frac
         self.v_gap = sum(
-            [width for b_item_counter in self.data_dic.values() for width in b_item_counter.values()]
+            [width for b_item_counter in self.data_dic.values()
+             for width in b_item_counter.values()]
         ) * v_gap_frac
         self.group_widths = self.get_group_widths()
         self.item_coord_dic = self.make_item_coordinate_dic()
@@ -139,9 +148,9 @@ class AlluvialTool:
     def get_rectangle_xy(self, item_coord, width, sign):
         x, y = item_coord
         rect = [[
-                    x + sign * 0.5 * (0.5 + xa) * self.h_gap,
-                    y + ya * width,
-                ] for xa, ya in self.combs]
+            x + sign * 0.5 * (0.5 + xa) * self.h_gap,
+            y + ya * width,
+        ] for xa, ya in self.combs]
         return np.array(rect)
 
     def generate_alluvial_fan(self, ):
@@ -152,7 +161,10 @@ class AlluvialTool:
                 if b_item in b_items4a_item:
                     l_a_rect, l_b_rect = self.get_label_rectangles_xy(a_item, b_item)
                     alluvial_fan += [
-                        [self.generate_alluvial_vein(a_item, b_item), l_a_rect, l_b_rect, a_item, b_item, ]]
+                        [self.generate_alluvial_vein(a_item, b_item), 
+                        l_a_rect, 
+                        l_b_rect, a_item, 
+                        b_item, ]]
         return np.array(alluvial_fan)
 
     def plot(self, figsize=(10, 15), alpha=0.5, **kwargs):
@@ -162,7 +174,7 @@ class AlluvialTool:
             patches = [
                 Polygon(item, facecolor=colors[ind], alpha=alpha,
                         ) for ind, item in enumerate(self.alluvial_fan[:, num])
-                ]
+            ]
             for patch in patches:
                 ax.add_patch(patch)
         self.auto_label_veins(**kwargs)
@@ -205,23 +217,35 @@ class AlluvialTool:
                 ha=ha, va='center', fontname=fontname)
 
     def label_sides(
-            self, labels=None, label_shift=0, disp_width=False, wdisp_sep=7*' ', fontname='Arial', **kwargs):
+            self, 
+            labels=None, 
+            label_shift=0, 
+            disp_width=False, 
+            wdisp_sep=7 * ' ', 
+            fontname='Arial', 
+            **kwargs):
         if labels is not None:
             _ = kwargs
-            y = max(self.group_widths)/2
+            y = max(self.group_widths) / 2
             itl, wtl = self.item_text_len, self.width_text_len
             for side, sign in enumerate((-1, 1)):
                 plt.text(
-                    self.x_range[side]+sign*(label_shift+itl+int(disp_width)*(len(wdisp_sep)+wtl))*self.h_gap_frac,
+                    self.x_range[side] + sign * (
+                            label_shift + itl + int(disp_width) * (len(wdisp_sep) + wtl))
+                            * self.h_gap_frac,
                     y,
                     labels[side],
                     # bidi.algorithm.get_display(labels[side]),  # RTL languages
-                    ha='center', va='center', fontname=fontname, fontsize=13, rotation=90-180*side
+                    ha='center', 
+                    va='center', 
+                    fontname=fontname, 
+                    fontsize=13, 
+                    rotation=90 - 180 * side
                 )
 
     def item_text(
             self, item, side,
-            disp_width=False, wdisp_sep=7*' ', width_in=True, **kwargs):
+            disp_width=False, wdisp_sep=7 * ' ', width_in=True, **kwargs):
         _ = kwargs
         f_item = item
         # f_item = bidi.algorithm.get_display(item)  # for RTL languages
@@ -231,9 +255,11 @@ class AlluvialTool:
         else:
             width = self.item_coord_dic[item].get_width()
             if side and width_in or (not side and not width_in):
-                lc, rc, wl, wr, tl, tr = '>', tal, self.width_text_len, self.item_text_len, width, f_item,
+                lc, rc, wl, wr, tl, tr =
+                 '>', tal, self.width_text_len, self.item_text_len, width, f_item,
             else:
-                lc, rc, wl, wr, tl, tr = tal, '>', self.item_text_len, self.width_text_len, f_item, width,
+                lc, rc, wl, wr, tl, tr =
+                 tal, '>', self.item_text_len, self.width_text_len, f_item, width,
             pat = '{:%s%d}%s{:%s%d}' % (lc, wl, wdisp_sep, rc, wr,)
             ans = pat.format(tl, tr, )
         return ans
