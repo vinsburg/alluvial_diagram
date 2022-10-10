@@ -161,7 +161,10 @@ class AlluvialTool:
                 if b_item in b_items4a_item:
                     l_a_rect, l_b_rect = self.get_label_rectangles_xy(a_item, b_item)
                     alluvial_fan += [
-                        [self.generate_alluvial_vein(a_item, b_item), l_a_rect, l_b_rect, a_item, b_item, ]]
+                        [self.generate_alluvial_vein(a_item, b_item), 
+                        l_a_rect, 
+                        l_b_rect, a_item, 
+                        b_item, ]]
         return np.array(alluvial_fan)
 
     def plot(self, figsize=(10, 15), alpha=0.5, **kwargs):
@@ -214,7 +217,13 @@ class AlluvialTool:
                 ha=ha, va='center', fontname=fontname)
 
     def label_sides(
-            self, labels=None, label_shift=0, disp_width=False, wdisp_sep=7 * ' ', fontname='Arial', **kwargs):
+            self, 
+            labels=None, 
+            label_shift=0, 
+            disp_width=False, 
+            wdisp_sep=7 * ' ', 
+            fontname='Arial', 
+            **kwargs):
         if labels is not None:
             _ = kwargs
             y = max(self.group_widths) / 2
@@ -222,11 +231,16 @@ class AlluvialTool:
             for side, sign in enumerate((-1, 1)):
                 plt.text(
                     self.x_range[side] + sign * (
-                            label_shift + itl + int(disp_width) * (len(wdisp_sep) + wtl)) * self.h_gap_frac,
+                            label_shift + itl + int(disp_width) * (len(wdisp_sep) + wtl))
+                            * self.h_gap_frac,
                     y,
                     labels[side],
                     # bidi.algorithm.get_display(labels[side]),  # RTL languages
-                    ha='center', va='center', fontname=fontname, fontsize=13, rotation=90 - 180 * side
+                    ha='center', 
+                    va='center', 
+                    fontname=fontname, 
+                    fontsize=13, 
+                    rotation=90 - 180 * side
                 )
 
     def item_text(
@@ -241,9 +255,11 @@ class AlluvialTool:
         else:
             width = self.item_coord_dic[item].get_width()
             if side and width_in or (not side and not width_in):
-                lc, rc, wl, wr, tl, tr = '>', tal, self.width_text_len, self.item_text_len, width, f_item,
+                lc, rc, wl, wr, tl, tr =
+                 '>', tal, self.width_text_len, self.item_text_len, width, f_item,
             else:
-                lc, rc, wl, wr, tl, tr = tal, '>', self.item_text_len, self.width_text_len, f_item, width,
+                lc, rc, wl, wr, tl, tr =
+                 tal, '>', self.item_text_len, self.width_text_len, f_item, width,
             pat = '{:%s%d}%s{:%s%d}' % (lc, wl, wdisp_sep, rc, wr,)
             ans = pat.format(tl, tr, )
         return ans
