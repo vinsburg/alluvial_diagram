@@ -255,11 +255,9 @@ class AlluvialTool:
         else:
             width = self.item_coord_dic[item].get_width()
             if side and width_in or (not side and not width_in):
-                lc, rc, wl, wr, tl, tr =
-                 '>', tal, self.width_text_len, self.item_text_len, width, f_item,
+                lc, rc, wl, wr, tl, tr = '>', tal, self.width_text_len, self.item_text_len, width, f_item,
             else:
-                lc, rc, wl, wr, tl, tr =
-                 tal, '>', self.item_text_len, self.width_text_len, f_item, width,
+                lc, rc, wl, wr, tl, tr = tal, '>', self.item_text_len, self.width_text_len, f_item, width,
             pat = '{:%s%d}%s{:%s%d}' % (lc, wl, wdisp_sep, rc, wr,)
             ans = pat.format(tl, tr, )
         return ans
