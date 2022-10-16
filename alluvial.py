@@ -2,7 +2,7 @@ import numpy as np
 from collections import Counter, defaultdict, OrderedDict
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
-import matplotlib.cm
+from matplotlib import colormaps 
 import itertools
 
 
@@ -185,7 +185,7 @@ class AlluvialTool:
         lci = len(color_items)
         if rand_seed is not None:
             np.random.seed(rand_seed)
-        cmap = cmap if cmap is not None else matplotlib.cm.get_cmap('hsv', lci * 10 ** 3)
+        cmap = cmap if cmap is not None else colormaps['hsv']
         color_array = colors if colors is not None else [
             cmap(item) for ind, item in enumerate(np.random.rand(lci))]
         ind_dic = {item: ind for ind, item in enumerate(color_items)}
