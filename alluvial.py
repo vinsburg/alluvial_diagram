@@ -1,5 +1,5 @@
 import numpy as np
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, OrderedDict
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib.cm
@@ -154,27 +154,24 @@ class AlluvialTool:
         return np.array(rect)
 
     def generate_alluvial_fan(self, ):
-        alluvial_fan = []
+        alluvial_fan = OrderedDict()
         for a_item in self.a_members:
             b_items4a_item = self.data_dic[a_item].keys()
             for b_item in self.b_members:
                 if b_item in b_items4a_item:
                     l_a_rect, l_b_rect = self.get_label_rectangles_xy(a_item, b_item)
-                    alluvial_fan += [
-                        [self.generate_alluvial_vein(a_item, b_item), 
-                        l_a_rect, 
-                        l_b_rect, a_item, 
-                        b_item, ]]
-        return np.array(alluvial_fan)
+                    alluvial_fan[(a_item, b_item)] = [
+                        self.generate_alluvial_vein(a_item, b_item),
+                        l_a_rect,
+                        l_b_rect,
+                    ]
+        return alluvial_fan
 
     def plot(self, figsize=(10, 15), alpha=0.5, **kwargs):
         colors = self.get_color_array(**kwargs)
         fig, ax = plt.subplots(figsize=figsize)
-        for num in (0, 1, 2):
-            patches = [
-                Polygon(item, facecolor=colors[ind], alpha=alpha,
-                        ) for ind, item in enumerate(self.alluvial_fan[:, num])
-            ]
+        for ind, vein_items in enumerate(self.alluvial_fan.values()):
+            patches = [Polygon(item, facecolor=colors[ind], alpha=alpha) for item in vein_items]
             for patch in patches:
                 ax.add_patch(patch)
         self.auto_label_veins(**kwargs)
@@ -193,7 +190,7 @@ class AlluvialTool:
             cmap(item) for ind, item in enumerate(np.random.rand(lci))]
         ind_dic = {item: ind for ind, item in enumerate(color_items)}
         polygon_colors = []
-        for _, _, _, a_item, b_item, in self.alluvial_fan:
+        for a_item, b_item, in self.alluvial_fan:
             item = b_item if color_side else a_item
             polygon_colors += [color_array[ind_dic[item]]]
         return np.array(polygon_colors)
@@ -217,12 +214,12 @@ class AlluvialTool:
                 ha=ha, va='center', fontname=fontname)
 
     def label_sides(
-            self, 
-            labels=None, 
-            label_shift=0, 
-            disp_width=False, 
-            wdisp_sep=7 * ' ', 
-            fontname='Arial', 
+            self,
+            labels=None,
+            label_shift=0,
+            disp_width=False,
+            wdisp_sep=7 * ' ',
+            fontname='Arial',
             **kwargs):
         if labels is not None:
             _ = kwargs
@@ -232,14 +229,14 @@ class AlluvialTool:
                 plt.text(
                     self.x_range[side] + sign * (
                             label_shift + itl + int(disp_width) * (len(wdisp_sep) + wtl))
-                            * self.h_gap_frac,
+                    * self.h_gap_frac,
                     y,
                     labels[side],
                     # bidi.algorithm.get_display(labels[side]),  # RTL languages
-                    ha='center', 
-                    va='center', 
-                    fontname=fontname, 
-                    fontsize=13, 
+                    ha='center',
+                    va='center',
+                    fontname=fontname,
+                    fontsize=13,
                     rotation=90 - 180 * side
                 )
 
