@@ -200,7 +200,7 @@ class AlluvialTool:
         width_text_len = max([len(str(w)) for w in self.item_widths_dic.values()])
         return item_text_len, width_text_len
 
-    def auto_label_veins(self, fontname='Arial', **kwargs):
+    def auto_label_veins(self, fontname='Monospace', **kwargs):
         # shift = max([len(item) for item in self.item_coord_dic.keys()]) / 50
         for item, vein in self.item_coord_dic.items():
             y_width = vein.get_width()
