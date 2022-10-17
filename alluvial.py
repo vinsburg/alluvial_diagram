@@ -196,8 +196,8 @@ class AlluvialTool:
         return np.array(polygon_colors)
 
     def get_vein_label_lengths(self):
-        item_text_len = max([len(it) for it in self.item_widths_dic])
-        width_text_len = max([len(str(w)) for w in self.item_widths_dic.values()])
+        item_text_len = max([len(it) for it in self.item_widths_dic], default=0)
+        width_text_len = max([len(str(w)) for w in self.item_widths_dic.values()], default=0)
         return item_text_len, width_text_len
 
     def auto_label_veins(self, fontname='Monospace', **kwargs):
