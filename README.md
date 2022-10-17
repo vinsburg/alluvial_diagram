@@ -7,11 +7,11 @@ Copy alluvial.py to a directory on the path, and import alluvial as shown below.
 
 ### Prerequisites
 
-matplotlib and numpy
+pip install -r requirements.txt
 
-### Installing
+### Setup
 
-Copy alluvial.py to your working directory.
+Place alluvial.py on path.
 
 #### Example 1:
 <pre><code>
