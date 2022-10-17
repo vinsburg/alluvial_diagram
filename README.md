@@ -3,8 +3,7 @@ A python script for generating "alluvial" styled bipartite diagrams, using matpl
 
 ## Getting Started
 
-Copy alluvial.py to your working directory, and follow the syntax in the examples below.
-See "Advanced use" for a mild parameter documentation.
+Copy alluvial.py to a directory on the path, and import alluvial as shown below.
 
 ### Prerequisites
 
@@ -56,8 +55,8 @@ plt.show()
 </code></pre>
 ![](/image_examples/Example2.png)
 
-### Advanced use
-* Additional input format - a list of tuples of structure:
+### Parameter overview
+* Alternative input format - a list of tuples of structure:
   * input_data = [('a_item0', 'b_item0'), ('a_item0', 'b_item1') , ('a_item1', 'b_item0')]
 * Parameters and default values:
   * alpha=0.5 - defines facecolor alpha for all veins
@@ -67,7 +66,7 @@ plt.show()
   * h_gap_frac=0.03 - changes the horizontal gap between the labels, vein base rectangles, and veins
   * v_gap_frac=0.03 - changes the vertical gap between veins
   * colors=None - an optional list of matplotlib spec colors, len(colors) must be equal to the number of items on color_side
-  * cmap=None - a matplotlib.cm color map instance, for choosing random colors. if None, 'hsv' is used
+  * cmap=None - a matplotlib.colormaps specification for choosing random colors. if None, 'hsv' is used
   * rand_seed=1 - a seed for the random color generator, if None colors are chosen at random
   * a_sort, b_sort - lists defining plot order of items (both are None by default). if None, items are sorted by width
   * disp_width=False - if True, displays vein widths beside item labels
@@ -75,7 +74,7 @@ plt.show()
   * width_in=True - displays width between the item text and the graph, reversed order if False
   * labels=None - a tuple of form ('a_label', 'b_label'), if None side labels are not plotted
   * figsize=(10, 15), The figure size.
-  * fontname='Arial' The font of all figure text
+  * fontname='Monospace' The font of all figure text
 
 
 ## License
