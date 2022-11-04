@@ -2,14 +2,14 @@ import numpy as np
 from collections import Counter, defaultdict, OrderedDict
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
-from matplotlib import colormaps 
+from matplotlib import colormaps
 import itertools
 
 
-# import bidi.algorithm  # for RTL languages
-
-
 def plot(input_data, *args, **kwargs):
+    # This function plots the alluvial diagram
+    # It allows the user to use this module without seeing its internals!!!!!!!!!!!!!!!!! It's magic!!!
+    # TODO: Turn this function into a static method in AlluvialTool
     at = AlluvialTool(input_data, *args, **kwargs)
     ax = at.plot(**kwargs)
     ax.axis('off')
@@ -25,27 +25,32 @@ class AlluvialTool:
             h_gap_frac=0.03,
             v_gap_frac=0.03,
             **kwargs):
-        self.input = input_data
-        self.x_range = x_range
-        self.res = res  # defines the resolution of the splines for all veins
-        self.combs = sorted(itertools.product((0, 1), (1, 0)), key=lambda xy: all(xy))
-        self.trace_xy = self.make_vein_blueprint_xy_arrays()
-        self.data_dic = self.read_input()
-        self.item_widths_dic = self.get_item_widths_dic()
-        self.a_members, self.b_members = self.get_item_groups(**kwargs)
-        self.h_gap_frac = h_gap_frac
+        # TODO: Break __init__ into several smaller sub-methods that do one thing each!
+        # TODO: Turn all "getters" into setters or generate methods
+        # TODO: Add documentation to methods
+        self.input = input_data  # Describes pairs of labels from 2 categories (e.g. "country" - "spoken language")
+        self.x_range = x_range  # Diagram coordinates in x-axis
+        self.res = res  # Defines the number of spline points used to draw veins
+        self.h_gap_frac = h_gap_frac  # Defines the horizontal distance between matplotlib patches (relative to x_range)
+        self.v_gap_frac = v_gap_frac  # Defines the vertical distance between matplotlib patches (relative to max y)
+        # TODO: Get label_patch_blueprint from a method and make it readable ([(0, 1), (0, 0), (1, 0), (1, 1)])
+        self.label_patch_blueprint = sorted(itertools.product((0, 1), (1, 0)), key=lambda xy: all(xy))
+        self.vein_blueprint = self.make_vein_blueprint_arrays()
+        self.input_data_dict = self.read_input()  # TODO: Consider explicitly passing input_data
+        self.item_width_dict = self.get_item_width_dict()
+        self.src_group, self.dst_group = self.groups = self.get_ordered_label_groups(**kwargs)
+        # TODO: get h_gap and v_gap from method/s
         self.h_gap = x_range[1] * h_gap_frac
-        self.v_gap_frac = v_gap_frac
         self.v_gap = sum(
-            [width for b_item_counter in self.data_dic.values()
+            [width for b_item_counter in self.input_data_dict.values()
              for width in b_item_counter.values()]
         ) * v_gap_frac
         self.group_widths = self.get_group_widths()
-        self.item_coord_dic = self.make_item_coordinate_dic()
+        self.item_coord_dict = self.generate_item_coordinate_dict()
         self.alluvial_fan = self.generate_alluvial_fan()
         self.item_text_len, self.width_text_len = self.get_vein_label_lengths()
 
-    def make_vein_blueprint_xy_arrays(self):
+    def make_vein_blueprint_arrays(self):
         y = np.array([0, 0.15, 0.5, 0.85, 1])
         x = np.linspace(self.x_range[0], self.x_range[-1], len(y))
         z = np.polyfit(x, y, 4)
@@ -56,7 +61,7 @@ class AlluvialTool:
         return blueprint_x_vals, blueprint_y_vals
 
     def get_vein_polygon_xy(self, y_range, width):
-        x, y = self.trace_xy
+        x, y = self.vein_blueprint
         y0, yn = y_range
         scale = yn - y0
         ty = y * scale + y0
@@ -87,60 +92,62 @@ class AlluvialTool:
         else:
             return self.read_input_from_list()
 
-    def get_item_widths_dic(self):
-        iwd = Counter()
-        for a_item, b_item_counter in self.data_dic.items():
-            for b_item, width in b_item_counter.items():
-                iwd[a_item] += width
-                iwd[b_item] += width
+    def get_item_width_dict(self):
+        iwd = Counter()  # item_width_dict
+        for src_item_label, dst_width_dict in self.input_data_dict.items():
+            for dst_item_label, width in dst_width_dict.items():
+                iwd[src_item_label] += width
+                iwd[dst_item_label] += width
         return iwd
 
-    def get_item_groups(self, a_sort=None, b_sort=None, **kwargs):
+    def get_ordered_label_groups(self, src_label_override=None, dst_label_override=None, **kwargs):
+        # TODO: Remove code duplication from creation of src, dst lists
         _ = kwargs
-        a_members = sorted(
-            {a_item for a_item in self.data_dic}, key=lambda x: self.item_widths_dic[x]
-        ) if not a_sort else a_sort
-        b_members = sorted(
-            {b_item for b_item_counter in self.data_dic.values() for b_item in b_item_counter},
-            key=lambda x: self.item_widths_dic[x]
-        ) if not b_sort else b_sort
-        return a_members, b_members
+
+        src_ordered_labels = src_label_override if src_label_override else sorted(
+            {src_item for src_item in self.input_data_dict}, key=lambda x: self.item_width_dict[x])
+
+        dst_ordered_labels = dst_label_override if dst_label_override else sorted(
+            {dst_item for dst_item_counter in self.input_data_dict.values() for dst_item in dst_item_counter},
+            key=lambda x: self.item_width_dict[x])
+
+        return src_ordered_labels, dst_ordered_labels
 
     def get_group_widths(self):
-        return [self.get_group_width(group) for group in (self.a_members, self.b_members)]
-
-    def make_item_coordinate_dic(self, ):
-        item_coord_dic = defaultdict(ItemCoordRecord)
-        groups = self.a_members, self.b_members
-        group_widths = self.group_widths
-        for ind, group in enumerate(groups):
-            last_pos = (max(group_widths) - group_widths[ind]) / 2
-            for item in group:
-                width = self.item_widths_dic[item]
-                xy = (self.x_range[ind], last_pos)
-                item_coord_dic[item].set_start_state(width, xy, side=ind)
-                last_pos += width + self.v_gap
-        return item_coord_dic
+        return [self.get_group_width(group) for group in (self.src_group, self.dst_group)]
 
     def get_group_width(self, group):
-        return sum([self.item_widths_dic[item] for item in group]) + (len(group) - 1) * self.v_gap
+        return sum([self.item_width_dict[item] for item in group]) + (len(group) - 1) * self.v_gap
 
-    def generate_alluvial_vein(self, a_item, b_item):
-        width = self.data_dic[a_item][b_item]
-        a_item_coord = self.item_coord_dic[a_item].read_state_and_advance_y(width)
-        b_item_coord = self.item_coord_dic[b_item].read_state_and_advance_y(width)
-        y_range = (a_item_coord[1], b_item_coord[1],)
+    def generate_item_coordinate_dict(self, ):
+        item_coord_dict = defaultdict(ItemCoordRecord)
+        for ind, group in enumerate(self.groups):
+            last_pos = (max(self.group_widths) - self.group_widths[ind]) / 2
+            # TODO: Move inner for loop into a method
+            for item in group:
+                width = self.item_width_dict[item]
+                xy = (self.x_range[ind], last_pos)
+                item_coord_dict[item].set_start_state(width, xy, side=ind)
+                last_pos += width + self.v_gap
+        return item_coord_dict
+
+    def generate_alluvial_vein(self, src_item, dst_item):
+        # TODO: Move coordinate allocation from here to ItemCoordRecord and rename to allocator
+        width = self.input_data_dict[src_item][dst_item]
+        src_item_coord = self.item_coord_dict[src_item].read_state_and_advance_y(width)
+        dst_item_coord = self.item_coord_dict[dst_item].read_state_and_advance_y(width)
+        y_range = (src_item_coord[1], dst_item_coord[1],)
         return self.get_vein_polygon_xy(y_range, width)
 
     def get_label_rectangles_xy(self, a_item, b_item):
-        width = self.data_dic[a_item][b_item]
+        width = self.input_data_dict[a_item][b_item]
         return (
             self.generate_item_sub_rectangle(a_item, width),
             self.generate_item_sub_rectangle(b_item, width),
         )
 
     def generate_item_sub_rectangle(self, item, width):
-        dic_entry = self.item_coord_dic[item]
+        dic_entry = self.item_coord_dict[item]
         item_coord = dic_entry.read_state()
         sign = dic_entry.get_side_sign()
         return self.get_rectangle_xy(item_coord, width, sign)
@@ -150,20 +157,20 @@ class AlluvialTool:
         rect = [[
             x + sign * 0.5 * (0.5 + xa) * self.h_gap,
             y + ya * width,
-        ] for xa, ya in self.combs]
+        ] for xa, ya in self.label_patch_blueprint]
         return np.array(rect)
 
     def generate_alluvial_fan(self, ):
         alluvial_fan = OrderedDict()
-        for a_item in self.a_members:
-            b_items4a_item = self.data_dic[a_item].keys()
-            for b_item in self.b_members:
-                if b_item in b_items4a_item:
-                    l_a_rect, l_b_rect = self.get_label_rectangles_xy(a_item, b_item)
-                    alluvial_fan[(a_item, b_item)] = [
-                        self.generate_alluvial_vein(a_item, b_item),
-                        l_a_rect,
-                        l_b_rect,
+        for src_item in self.src_group:
+            dst_items_for_current_src_item = self.input_data_dict[src_item].keys()
+            for dst_item in self.dst_group:
+                if dst_item in dst_items_for_current_src_item:
+                    src_label_rect, dst_label_rect = self.get_label_rectangles_xy(src_item, dst_item)
+                    alluvial_fan[(src_item, dst_item)] = [
+                        self.generate_alluvial_vein(src_item, dst_item),
+                        src_label_rect,
+                        dst_label_rect,
                     ]
         return alluvial_fan
 
@@ -181,7 +188,7 @@ class AlluvialTool:
 
     def get_color_array(self, colors=None, color_side=0, rand_seed=1, cmap=None, **kwargs):
         _ = kwargs
-        color_items = self.b_members if color_side else self.a_members
+        color_items = self.dst_group if color_side else self.src_group
         lci = len(color_items)
         if rand_seed is not None:
             np.random.seed(rand_seed)
@@ -196,13 +203,13 @@ class AlluvialTool:
         return np.array(polygon_colors)
 
     def get_vein_label_lengths(self):
-        item_text_len = max([len(it) for it in self.item_widths_dic], default=0)
-        width_text_len = max([len(str(w)) for w in self.item_widths_dic.values()], default=0)
+        item_text_len = max([len(it) for it in self.item_width_dict], default=0)
+        width_text_len = max([len(str(w)) for w in self.item_width_dict.values()], default=0)
         return item_text_len, width_text_len
 
     def auto_label_veins(self, fontname='Monospace', **kwargs):
         # shift = max([len(item) for item in self.item_coord_dic.keys()]) / 50
-        for item, vein in self.item_coord_dic.items():
+        for item, vein in self.item_coord_dict.items():
             y_width = vein.get_width()
             sign = vein.get_side_sign()
             side = int(sign + 1) // 2
@@ -250,7 +257,7 @@ class AlluvialTool:
         if not disp_width:
             ans = ('{:%s}' % tal).format(item)
         else:
-            width = self.item_coord_dic[item].get_width()
+            width = self.item_coord_dict[item].get_width()
             if side and width_in or (not side and not width_in):
                 lc, rc, wl, wr, tl, tr = '>', tal, self.width_text_len, self.item_text_len, width, f_item,
             else:
