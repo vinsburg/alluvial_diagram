@@ -3,7 +3,6 @@ from collections import Counter, defaultdict, OrderedDict
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib import colormaps
-import itertools
 
 
 def plot(input_data, *args, **kwargs):
@@ -33,8 +32,6 @@ class AlluvialTool:
         self.res = res  # Defines the number of spline points used to draw veins
         self.h_gap_frac = h_gap_frac  # Defines the horizontal distance between matplotlib patches (relative to x_range)
         self.v_gap_frac = v_gap_frac  # Defines the vertical distance between matplotlib patches (relative to max y)
-        # TODO: Get label_patch_blueprint from a method and make it readable ([(0, 1), (0, 0), (1, 0), (1, 1)])
-        self.label_patch_blueprint = sorted(itertools.product((0, 1), (1, 0)), key=lambda xy: all(xy))
         self.vein_blueprint = self.make_vein_blueprint_arrays()
         self.input_data_dict = self.read_input()  # TODO: Consider explicitly passing input_data
         self.item_width_dict = self.get_item_width_dict()
@@ -157,7 +154,7 @@ class AlluvialTool:
         rect = [[
             x + sign * 0.5 * (0.5 + xa) * self.h_gap,
             y + ya * width,
-        ] for xa, ya in self.label_patch_blueprint]
+        ] for xa, ya in ((0, 1), (0, 0), (1, 0), (1, 1))]
         return np.array(rect)
 
     def generate_alluvial_fan(self, ):
